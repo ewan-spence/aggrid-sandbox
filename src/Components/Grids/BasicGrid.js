@@ -1,8 +1,9 @@
-import { AgGridReact } from "ag-grid-react";
-
 import "ag-grid-community/dist/styles/ag-grid.css"
 import "ag-grid-community/dist/styles/ag-theme-balham.css";
-import { useMemo, useRef, useState } from "react";
+
+import { useState } from "react";
+
+import GridBase from "../GridBase";
 
 
 export default function BasicGrid(props) {
@@ -22,26 +23,10 @@ export default function BasicGrid(props) {
         }
     ]);
 
-    const defaultColDefs = useMemo(() => ({
-        resizable: true
-    }), []);
-
-    const gridRef = useRef();
-
-    const onGridReady = ({ api }) => {
-        api.sizeColumnsToFit();
-    }
-
     return (
         <div className="ag-theme-balham" style={{ height: "100%" }}>
-            <AgGridReact
-                ref={gridRef}
+            <GridBase
                 rowData={rowData}
-                columnDefs={columnDefs}
-                defaultColDef={defaultColDefs}
-                onGridReady={onGridReady}
-            >
-
-            </AgGridReact>
+                columnDefs={columnDefs} />
         </div>)
 }
