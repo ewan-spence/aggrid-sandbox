@@ -1,9 +1,9 @@
 import 'ag-grid-community';
+import "ag-grid-community/dist/styles/ag-theme-alpine.css"
 import 'ag-grid-react';
 import 'ag-grid-enterprise';
 
-import "ag-grid-community/dist/styles/ag-theme-alpine.css"
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import GridBase from "../GridBase";
 import { Button } from 'react-bootstrap';
 
@@ -26,14 +26,9 @@ const getCellEditorParams = (params) => {
     };
 };
 
-const emptyRow = {
-    fullName: "",
-    email: "",
-    organisation: "Save and Invest",
-    adviser: ""
-}
+export default function EditableGrid({ emptyRow }) {
+    const gridRef = useRef();
 
-export default function EditableGrid(props) {
     const [rowData] = useState([
         {
             fullName: "Ewan Spence",
@@ -44,7 +39,7 @@ export default function EditableGrid(props) {
     ]);
 
     const [columnDefs] = useState([
-        { field: "fullName", editable: true },
+        { field: "fullName", editable: true, checkboxSelection: true },
         { field: "email", editable: true },
         {
             field: "organisation",
@@ -66,7 +61,6 @@ export default function EditableGrid(props) {
 
     const onCellValueChanged = useCallback(params => {
         const colId = params.column.getId();
-        console.log(params);
 
         if (colId === "organisation") {
             const selectedOrg = params.data.organisation;
@@ -82,7 +76,7 @@ export default function EditableGrid(props) {
         }
     }, []);
 
-    const onButtonClick = () => {
+    const onAddRowClick = () => {
         // Create transaction with a copy of the empty row
         var addRowTransaction = {
             add: [{ ...emptyRow }]
@@ -91,19 +85,24 @@ export default function EditableGrid(props) {
         gridRef.current.api.applyTransaction(addRowTransaction);
     }
 
-    const editMostRecentRow = (event) => {
-        var cellParams = {
-            rowIndex: event.lastRow,
-            colKey: columnDefs[0].field
+    const onDeleteRowClick = () => {
+        var delRowTransaction = {
+            remove: gridRef.current.api.getSelectedRows()
         }
 
-        console.log(event.api)
-        console.log(cellParams);
+        gridRef.current.api.applyTransaction(delRowTransaction)
+    };
 
-        event.api.startEditingCell(cellParams);
+    const editMostRecentRow = () => {
+        gridRef.current.api.stopEditing();
+
+        var cellParams = {
+            rowIndex: gridRef.current.props.rowData.length,
+            colKey: gridRef.current.props.columnDefs[0].field
+        }
+
+        gridRef.current.api.startEditingCell(cellParams);
     }
-
-    const gridRef = useRef();
 
     return (
         <div className="ag-theme-alpine" style={{ height: "100%" }}>
@@ -112,10 +111,13 @@ export default function EditableGrid(props) {
                 rowData={rowData}
                 columnDefs={columnDefs}
                 editType='fullRow'
+                rowSelection='multiple'
+                enableRangeSelection={true}
                 onCellValueChanged={onCellValueChanged}
                 onViewportChanged={editMostRecentRow}
             />
-            <Button onClick={onButtonClick}>Click Me</Button>
+            <Button className="m-3" onClick={onAddRowClick}>Add Empty Row</Button>
+            <Button className="m-3" variant="danger" onClick={onDeleteRowClick}>Delete Selected Row</Button>
         </div>
     )
 }

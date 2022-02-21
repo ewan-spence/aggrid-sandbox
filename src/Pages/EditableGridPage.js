@@ -11,7 +11,12 @@ export default function EditableGridPage(props) {
     return (
         <Container style={{ height: "40vh" }}>
             <Title>Editable Grid</Title>
-            The following is a grid with editable fields that
-            <EditableGrid />
+            The following is a grid with editable rows that can be added or removed using buttons.
+            <EditableGrid emptyRow={{
+                fullName: "",
+                email: "",
+                organisation: "Save and Invest",
+                adviser: ""
+            }} />
         </Container>)
 }
