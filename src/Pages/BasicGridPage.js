@@ -10,7 +10,7 @@ export default function BasicGridPage(props) {
     { make: "Toyota", model: "Celica", price: 35000 },
     { make: "Ford", model: "Mondeo", price: 32000 },
     { make: "Porsche", model: "Boxter", price: 72000 }
-  ])
+  ]);
 
   const [columnDefs] = useState([
     { field: "make" },
